@@ -33,7 +33,7 @@ public class Controlador {
     // Boolean para controlar la direccion del ascensor
     public static boolean subiendo = true;
     // Semaforo para cada planta
-    public static Semaphore semaforoPlanta[];
+    public static Semaphore semaforoPlanta[] = new Semaphore[plantas];
     // Planta actual en la que se encuentra el ascensor
     public static int plantaActual = 0;
 
@@ -55,15 +55,14 @@ public class Controlador {
         }
 
         // Se crea la persona y se le anaden las plantas de inicio y fin
-        Persona p = new Persona();
+        Persona p = new Persona(pInicio,pFin);
         // TODO nombre
-        p.setPlantaInicio(pInicio);
-        p.setPlantaFin(pFin);
 
         // Se anade la persona al array
         personasEsperando.add(p);
-
-        // TODO Lanzar persona
+        
+        // Lanzamos a la persona
+        p.start();
     }
 
     /**
