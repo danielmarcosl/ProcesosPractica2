@@ -9,15 +9,8 @@ import static ascensor.Modelo.plantaAleatoria;
  */
 public class Principal {
 
-    // Boolean para parar/reanudar el programa
-    public static boolean funcionando = true;
-
-    
     public static void main(String args[]) {
-        
-        while (funcionando) {
-            System.out.println(Modelo.sleepAleatorio());
-        }
-    }
 
+        new Controlador();
+    }
 }

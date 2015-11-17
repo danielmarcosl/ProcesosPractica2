@@ -1,7 +1,10 @@
 package ascensor;
 
+import static java.lang.Thread.sleep;
 import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -10,19 +13,16 @@ import java.util.concurrent.Semaphore;
  */
 public class Controlador {
 
-    // Declaramos un objeto para cada clase
-    Modelo objModelo = null;
+    // Declaramos la clase Vista
     Vista objVista = null;
 
     /**
      * Declaramos el constructor
      *
      * @param vi Nuevo objeto Vista
-     * @param mo Nuevo objeto Modelo
      */
-    public Controlador(Vista vi, Modelo mo) {
-        this.objVista = vi;
-        this.objModelo = mo;
+    public Controlador() {
+        objVista = new Vista("Ascensor");
     }
 
     // Variables de modelo de datos
@@ -30,13 +30,16 @@ public class Controlador {
     public static int capacidad = 6;
     // Numero de plantas
     public static int plantas = 4;
+    // Planta actual en la que se encuentra el ascensor
+    public static int plantaActual = 0;
+    // Contador de personas para asignarles numeros
+    public static int countPersonas = 0;
     // Boolean para controlar la direccion del ascensor
     public static boolean subiendo = true;
     // Semaforo para cada planta
     public static Semaphore semaforoPlanta[] = new Semaphore[plantas];
-    // Planta actual en la que se encuentra el ascensor
-    public static int plantaActual = 0;
-
+    // Semaforo para el ascensor
+    public static Semaphore semaforoAscensor;
     // ArrayList de personas esperando al ascensor
     public static ArrayList<Persona> personasEsperando = new ArrayList<Persona>();
     // ArrayList de personas dentro del ascensor
@@ -54,15 +57,17 @@ public class Controlador {
             pFin = Modelo.plantaAleatoria();
         }
 
-        // Se crea la persona y se le anaden las plantas de inicio y fin
-        Persona p = new Persona(pInicio,pFin);
-        // TODO nombre
+        // Se crea la persona y se le anaden las plantas de inicio y fin, y su numero
+        Persona p = new Persona(pInicio, pFin, countPersonas);
 
         // Se anade la persona al array
         personasEsperando.add(p);
-        
+
         // Lanzamos a la persona
         p.start();
+
+        // Aumentamos el contador
+        countPersonas++;
     }
 
     /**
@@ -84,11 +89,57 @@ public class Controlador {
                 subiendo = true;
             }
         }
+
+        System.out.println("El ascensor ha llegado a la planta " + plantaActual);
+    }
+
+    /**
+     * Metodo para controlar el acceso al ascensor
+     *
+     * @param p Persona que entra al ascensor
+     */
+    public static void entrarAscensor(Persona p) {
+
+        // Mientras la capacidad del ascensor este ocupada, esperamos
+        while (personasAscensor.size() < capacidad) {
+            try {
+                sleep(100);
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
+        }
+
+        // Si se ha llegado a la capacidad maxima
+        if (personasAscensor.size() < capacidad) {
+            try {
+                // Cerramos el semaforo del ascensor
+                semaforoAscensor.acquire();
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
+        }
+        // Quitamos a la persona de esperar
+        personasEsperando.remove(p);
+        // La anadimos al ascensor
+        personasAscensor.add(p);
+    }
+
+    public static void salirAscensor(Persona p) {
+        
+        
+        // Quitamos a la persona del ascensor
+        personasAscensor.remove(p);
+
+        // Abrimos el semaforo
+        semaforoPlanta[plantaActual].release();
     }
 
     public void Run() {
         // Cambiamos el piso del ascensor
         cambiarPiso();
+
+        // Abrimos semaforo del piso actual
+        semaforoPlanta[plantaActual].release();
 
         // Generamos un numero aleatorio de personas nuevas
         int personasNuevas = Modelo.nuevasPersonasAleatorio();
@@ -97,12 +148,19 @@ public class Controlador {
             nuevaPersona();
         }
 
-        // Comprobamos si alguna de las personas del ascensor va a salir en la planta actual
-        // Si se encuentra alguna, se espera a que termine su proceso
-        for (int j = 0; j < personasAscensor.size(); j++) {
-            if (personasAscensor.get(j).getPlantaFin() == plantaActual) {
-                // TODO waitFor()
-            }
+        // Cerramos el semaforo del piso actual
+        try {
+            semaforoPlanta[plantaActual].acquire();
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
         }
+
+//        // Comprobamos si alguna de las personas del ascensor va a salir en la planta actual
+//        // Si se encuentra alguna, se espera a que termine su proceso
+//        for (int j = 0; j < personasAscensor.size(); j++) {
+//            if (personasAscensor.get(j).getPlantaFin() == plantaActual) {
+//                // TODO waitFor()
+//            }
+//        }
     }
 }

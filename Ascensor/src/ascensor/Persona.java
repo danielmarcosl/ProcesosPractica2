@@ -12,17 +12,17 @@ public class Persona extends Thread {
 
     int plantaInicio;
     int plantaFin;
-    String nombre;
+    int numero;
 
     /**
      * Crea un hilo hijo con el numero de hilo dado por el padre
      *
      * @param nHilo Numero de hilo dado por el padre
      */
-    Persona(int pi, int pf) {
+    Persona(int pi, int pf,int nu) {
         this.plantaInicio = pi;
         this.plantaFin = pf;
-        //this.nombre = n;
+        this.numero = nu;
     }
 
     public void setPlantaInicio(int pi) {
@@ -33,8 +33,8 @@ public class Persona extends Thread {
         plantaFin = pf;
     }
 
-    public void setNombre(String n) {
-        nombre = n;
+    public void setNombre(int nu) {
+        numero = nu;
     }
 
     public int getPlantaInicio() {
@@ -45,12 +45,15 @@ public class Persona extends Thread {
         return plantaFin;
     }
 
-    public String getNombre() {
-        return nombre;
+    public int getNumero() {
+        return numero;
     }
 
-    public void run() {
+    public void Run() {
 
-
+        System.out.println("Persona " + numero + " va del piso " + plantaInicio + " al " + plantaFin);
+        
+        Controlador.entrarAscensor(this);
+        Controlador.salirAscensor(this);
     }
 }

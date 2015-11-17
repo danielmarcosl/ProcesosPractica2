@@ -1,18 +1,21 @@
 package ascensor;
 
+import java.awt.TextArea;
+import javax.swing.JFrame;
+
 /**
  *
  * @author Daniel Marcos Lorrio
  * @version 1 31/10/2015
  */
 public class Vista {
-    
+
     private JFrame ventana = new JFrame();
     private TextArea texto_ventana = new TextArea();
 
     /**
      * Creacion de ventana de Windows
-     * 
+     *
      * @param nombre Nombre de la ventana
      */
     Vista(String nombre) {

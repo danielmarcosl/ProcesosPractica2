@@ -34,12 +34,12 @@ public class Modelo {
 
         return sl;
     }
-    
+
     public static int nuevasPersonasAleatorio() {
         Random rand = new Random();
-        
+
         int np = rand.nextInt((3 - 1) + 1) + 1;
-        
+
         return np;
     }
 }
