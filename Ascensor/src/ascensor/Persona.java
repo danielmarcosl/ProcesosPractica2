@@ -19,10 +19,17 @@ public class Persona extends Thread {
      *
      * @param nHilo Numero de hilo dado por el padre
      */
-    Persona(int pi, int pf,int nu) {
+    Persona(int pi, int pf, int nu) {
         this.plantaInicio = pi;
         this.plantaFin = pf;
         this.numero = nu;
+    }
+
+    public void run() {
+        System.out.println("Persona " + numero + " va del piso " + plantaInicio + " al " + plantaFin);
+
+        Modelo.entrarAscensor(this);
+        Modelo.salirAscensor(this);
     }
 
     public void setPlantaInicio(int pi) {
@@ -49,11 +56,11 @@ public class Persona extends Thread {
         return numero;
     }
 
-    public void Run() {
-
-        System.out.println("Persona " + numero + " va del piso " + plantaInicio + " al " + plantaFin);
-        
-        Controlador.entrarAscensor(this);
-        Controlador.salirAscensor(this);
-    }
+//    public void Run() {
+//
+//        System.out.println("Persona " + numero + " va del piso " + plantaInicio + " al " + plantaFin);
+//        
+//        Controlador.entrarAscensor(this);
+//        Controlador.salirAscensor(this);
+//    }
 }

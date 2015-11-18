@@ -16,15 +16,6 @@ public class Controlador {
     // Declaramos la clase Vista
     Vista objVista = null;
 
-    /**
-     * Declaramos el constructor
-     *
-     * @param vi Nuevo objeto Vista
-     */
-    public Controlador() {
-        objVista = new Vista("Ascensor");
-    }
-
     // Variables de modelo de datos
     // Numero maximo de personas que permite el ascensor
     public static int capacidad = 6;
@@ -44,6 +35,10 @@ public class Controlador {
     public static ArrayList<Persona> personasEsperando = new ArrayList<Persona>();
     // ArrayList de personas dentro del ascensor
     public static ArrayList<Persona> personasAscensor = new ArrayList<Persona>();
+    
+    public static Persona per[] = new Persona[288];
+    
+    public static boolean esperando = false;
 
     /**
      * Metodo para crear una nueva persona
@@ -56,6 +51,10 @@ public class Controlador {
         while (pInicio == pFin) {
             pFin = Modelo.plantaAleatoria();
         }
+        
+        if(pInicio == plantaActual) {
+            esperando = true;
+        }
 
         // Se crea la persona y se le anaden las plantas de inicio y fin, y su numero
         Persona p = new Persona(pInicio, pFin, countPersonas);
@@ -64,8 +63,9 @@ public class Controlador {
         personasEsperando.add(p);
 
         // Lanzamos a la persona
-        p.start();
-
+        per[countPersonas] = p;
+        per[countPersonas].start();
+                
         // Aumentamos el contador
         countPersonas++;
     }
@@ -78,7 +78,7 @@ public class Controlador {
             // Se incrementa la planta
             plantaActual++;
             // Si llega al último piso, cambiamos la direccion para que baje
-            if (plantaActual == plantas) {
+            if (plantaActual == (plantas - 1)) {
                 subiendo = false;
             }
         } else if (!subiendo) {
@@ -93,67 +93,65 @@ public class Controlador {
         System.out.println("El ascensor ha llegado a la planta " + plantaActual);
     }
 
+    public static void inicializarSemaforos() {
+        semaforoAscensor = new Semaphore(5);
+
+        for (int i = 0; i < plantas; i++) {
+            semaforoPlanta[i] = new Semaphore(1);
+            System.out.println("inicializando semaforo " + i);
+            try {
+                semaforoPlanta[i].acquire();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Controlador.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+
     /**
-     * Metodo para controlar el acceso al ascensor
+     * Declaramos el constructor
      *
-     * @param p Persona que entra al ascensor
+     * @param vi Nuevo objeto Vista
      */
-    public static void entrarAscensor(Persona p) {
+    public Controlador() {
+        //objVista = new Vista("Ascensor");
 
-        // Mientras la capacidad del ascensor este ocupada, esperamos
-        while (personasAscensor.size() < capacidad) {
+        boolean funcionando = true;
+
+        inicializarSemaforos();
+
+        while (funcionando) {
+
+            // Cambiamos el piso del ascensor
+            cambiarPiso();
+
+            // Abrimos semaforo del piso actual
+            semaforoPlanta[plantaActual].release();
+            System.out.println("abrimos semaforo " + plantaActual);
+
+            // Generamos un numero aleatorio de personas nuevas
+            int personasNuevas = Modelo.nuevasPersonasAleatorio();
+            // Las creamos
+            System.out.println("vamos a crear " + personasNuevas);
+            for (int i = 0; i < personasNuevas; i++) {
+                System.out.println("persona " + countPersonas + " creandose");
+                nuevaPersona();
+            }
+            
+            while(esperando) {
+                try {
+                    sleep(1000);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Controlador.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+
+            // Cerramos el semaforo del piso actual
             try {
-                sleep(100);
+                semaforoPlanta[plantaActual].acquire();
+                System.out.println("cerramos semaforo " + plantaActual);
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             }
-        }
-
-        // Si se ha llegado a la capacidad maxima
-        if (personasAscensor.size() < capacidad) {
-            try {
-                // Cerramos el semaforo del ascensor
-                semaforoAscensor.acquire();
-            } catch (InterruptedException ex) {
-                ex.printStackTrace();
-            }
-        }
-        // Quitamos a la persona de esperar
-        personasEsperando.remove(p);
-        // La anadimos al ascensor
-        personasAscensor.add(p);
-    }
-
-    public static void salirAscensor(Persona p) {
-        
-        
-        // Quitamos a la persona del ascensor
-        personasAscensor.remove(p);
-
-        // Abrimos el semaforo
-        semaforoPlanta[plantaActual].release();
-    }
-
-    public void Run() {
-        // Cambiamos el piso del ascensor
-        cambiarPiso();
-
-        // Abrimos semaforo del piso actual
-        semaforoPlanta[plantaActual].release();
-
-        // Generamos un numero aleatorio de personas nuevas
-        int personasNuevas = Modelo.nuevasPersonasAleatorio();
-        // Las creamos
-        for (int i = 0; i < personasNuevas; i++) {
-            nuevaPersona();
-        }
-
-        // Cerramos el semaforo del piso actual
-        try {
-            semaforoPlanta[plantaActual].acquire();
-        } catch (InterruptedException ex) {
-            ex.printStackTrace();
-        }
 
 //        // Comprobamos si alguna de las personas del ascensor va a salir en la planta actual
 //        // Si se encuentra alguna, se espera a que termine su proceso
@@ -162,5 +160,6 @@ public class Controlador {
 //                // TODO waitFor()
 //            }
 //        }
+        }
     }
 }
