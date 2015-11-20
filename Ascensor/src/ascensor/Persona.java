@@ -24,8 +24,6 @@ public class Persona extends Thread {
     }
 
     public void run() {
-        System.out.println("\nPersona " + numero + " va del piso " + plantaInicio + " al " + plantaFin);
-
         Modelo.entrarAscensor(this);
         Modelo.salirAscensor(this);
     }

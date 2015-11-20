@@ -1,7 +1,10 @@
 package ascensor;
 
+import static java.lang.Thread.sleep;
 import java.util.Random;
 import java.util.concurrent.Semaphore;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -29,6 +32,9 @@ public class Modelo {
 
         // Se anade la persona al array de personas esperando
         Controlador.personasEsperando.add(p);
+
+        //System.out.println("\nPersona " + numero + " va del piso " + plantaInicio + " al " + plantaFin);
+        Vista.texto_ventana.setText(Vista.texto_ventana.getText() + "\nPersona " + Controlador.countPersonas + " va del piso " + pInicio + " al " + pFin);
 
         // Lanzamos a la persona
         Controlador.per[Controlador.countPersonas] = p;
@@ -74,7 +80,8 @@ public class Modelo {
             }
         }
 
-        System.out.println("\nEl ascensor ha llegado a la planta " + Controlador.plantaActual);
+        //System.out.println("\nEl ascensor ha llegado a la planta " + Controlador.plantaActual);
+        Vista.texto_ventana.setText(Vista.texto_ventana.getText() + "\nEl ascensor ha llegado a la planta " + Controlador.plantaActual);
     }
 
     /**
@@ -84,6 +91,13 @@ public class Modelo {
      */
     public static void entrarAscensor(Persona p) {
 
+        while (p.plantaInicio != Controlador.plantaActual) {
+            try {
+                sleep(1000);
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
+        }
         // Cierra el semaforo de la planta
         // Debe estar abierto previamente, sino el hilo esperara a que se abra
         try {
@@ -98,7 +112,8 @@ public class Modelo {
         // Cerramos el semaforo del ascensor
         try {
             Controlador.semaforoAscensor.acquire();
-            System.out.println("\nPersona " + p.numero + " entra al ascensor");
+            //System.out.println("\nPersona " + p.numero + " entra al ascensor");
+            Vista.texto_ventana.setText(Vista.texto_ventana.getText() + "\nPersona " + p.numero + " entra al ascensor");
         } catch (InterruptedException ex) {
             ex.printStackTrace();
         }
@@ -116,6 +131,13 @@ public class Modelo {
      */
     public static void salirAscensor(Persona p) {
 
+        while (p.plantaFin != Controlador.plantaActual) {
+            try {
+                sleep(1000);
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
+        }
         // Cierra el semaforo de la planta
         // Debe estar abierto previamente, sino el hilo esperara a que se abra
         try {
@@ -133,7 +155,8 @@ public class Modelo {
         // Abrimos el semaforo del ascensor
         Controlador.semaforoAscensor.release();
 
-        System.out.println("\nPersona " + p.numero + " sale del ascensor");
+        //System.out.println("\nPersona " + p.numero + " sale del ascensor");
+        Vista.texto_ventana.setText(Vista.texto_ventana.getText() + "\nPersona " + p.numero + " sale del ascensor");
     }
 
     /**

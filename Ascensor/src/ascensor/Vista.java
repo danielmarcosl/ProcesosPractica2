@@ -4,7 +4,6 @@ import java.awt.TextArea;
 import javax.swing.JFrame;
 
 /**
- * TODO
  *
  * @author Daniel Marcos Lorrio
  * @version 2 20/11/2015
@@ -12,7 +11,7 @@ import javax.swing.JFrame;
 public class Vista {
 
     private JFrame ventana = new JFrame();
-    private TextArea texto_ventana = new TextArea();
+    public static TextArea texto_ventana = new TextArea();
 
     /**
      * Creacion de ventana de Windows

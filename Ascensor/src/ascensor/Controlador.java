@@ -10,6 +10,9 @@ import java.util.concurrent.Semaphore;
  * @version 2 20/11/2015
  */
 public class Controlador {
+    
+    // Variable vista
+    Vista objVista = new Vista(Vista.texto_ventana.getText() + "Ascensor");
 
     // Variables de modelo de datos
     // Numero maximo de personas que permite el ascensor
@@ -55,12 +58,11 @@ public class Controlador {
             // Generamos un numero aleatorio de personas nuevas
             int personasNuevas = Modelo.nuevasPersonasAleatorio();
             // Las creamos
-            System.out.println("\nHan llegado " + personasNuevas + " personas");
+            //System.out.println("\nHan llegado " + personasNuevas + " personas");
+            Vista.texto_ventana.setText(Vista.texto_ventana.getText() + "\nHan llegado " + personasNuevas + " personas");
             for (int i = 0; i < personasNuevas; i++) {
                 Modelo.nuevaPersona();
             }
-
-            System.out.println("\nEl ascensor lleva actualmente " + personasAscensor.size() + " personas");
 
             // Dormimos al ascensor varios segundos
             try {
@@ -76,6 +78,16 @@ public class Controlador {
                 ex.printStackTrace();
             }
 
+            //System.out.println("\nEl ascensor lleva actualmente " + personasAscensor.size() + " personas");
+            Vista.texto_ventana.setText(Vista.texto_ventana.getText() + "\nEl ascensor lleva actualmente " + personasAscensor.size() + " personas\n");
+
+
+            // Dormimos al ascensor varios segundos
+            try {
+                sleep(1000);
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
             // Comprobamos si el programa ha finalizado
             Modelo.comprobarFinPrograma();
         }
