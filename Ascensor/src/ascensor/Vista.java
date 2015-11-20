@@ -4,9 +4,10 @@ import java.awt.TextArea;
 import javax.swing.JFrame;
 
 /**
+ * TODO
  *
  * @author Daniel Marcos Lorrio
- * @version 1 31/10/2015
+ * @version 2 20/11/2015
  */
 public class Vista {
 

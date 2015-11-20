@@ -1,12 +1,10 @@
 package ascensor;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
- * Clase Persona con metodos get y set
+ * Clase Persona con metodos get y set y su ejecucion
  *
  * @author Daniel Marcos Lorrio
+ * @version 2 20/11/2015
  */
 public class Persona extends Thread {
 
@@ -26,41 +24,9 @@ public class Persona extends Thread {
     }
 
     public void run() {
-        System.out.println("Persona " + numero + " va del piso " + plantaInicio + " al " + plantaFin);
+        System.out.println("\nPersona " + numero + " va del piso " + plantaInicio + " al " + plantaFin);
 
         Modelo.entrarAscensor(this);
         Modelo.salirAscensor(this);
     }
-
-    public void setPlantaInicio(int pi) {
-        plantaInicio = pi;
-    }
-
-    public void setPlantaFin(int pf) {
-        plantaFin = pf;
-    }
-
-    public void setNombre(int nu) {
-        numero = nu;
-    }
-
-    public int getPlantaInicio() {
-        return plantaInicio;
-    }
-
-    public int getPlantaFin() {
-        return plantaFin;
-    }
-
-    public int getNumero() {
-        return numero;
-    }
-
-//    public void Run() {
-//
-//        System.out.println("Persona " + numero + " va del piso " + plantaInicio + " al " + plantaFin);
-//        
-//        Controlador.entrarAscensor(this);
-//        Controlador.salirAscensor(this);
-//    }
 }
